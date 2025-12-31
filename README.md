@@ -7,7 +7,31 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
+# Running the app
+
+Generate and export a secure `SECRET_KEY` (recommended):
+
+```bash
+export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
 uvicorn burrow.app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Or run the server with a one-off generated key in the same command:
+
+```bash
+SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')" uvicorn burrow.app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Development fallback (NOT for production):
+
+```bash
+export DEV_INSECURE_KEY=1
+uvicorn burrow.app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Notes:
+- `SECRET_KEY` is required by the application for JWT signing. Rotating it will invalidate existing tokens.
+- In production, provide `SECRET_KEY` via your secret manager / container secrets (do not commit it).
 
 
 We're going to user PostgreSQL as databse

@@ -3,7 +3,7 @@ import logging
 
 # Import your routers and security utilities
 from burrow.app.api.v1 import hello, auth
-from burrow.app.core.security import require_app_key, require_current_user
+from burrow.app.core.security import require_app_key, require_current_user, require_current_user_for_client
 
 # ---- Logging setup ----
 logging.basicConfig(level=logging.INFO)
@@ -44,10 +44,8 @@ def profile(user: str = Depends(require_current_user)):
 
 # ---- Example: secure endpoint (requires BOTH API key + JWT) ----
 @app.get("/api/v1/secure-data")
-def secure_data(
-    client: str = Depends(require_app_key),
-    user: str = Depends(require_current_user),
-):
+def secure_data(auth: tuple = Depends(require_current_user_for_client)):
+    client, user = auth
     logger.info(f"Secure endpoint accessed by client={client}, user={user}")
     return {
         "message": "You passed both gates!",
