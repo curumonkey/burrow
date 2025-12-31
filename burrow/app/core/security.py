@@ -61,6 +61,7 @@ api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 APP_KEYS = {
     "app1-key-123": "App One",
     "app2-key-456": "App Two",
+    "persona-app-key-1225": "Persona App",
 }
 
 def require_app_key(api_key: str = Security(api_key_header)) -> str:

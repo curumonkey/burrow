@@ -1,9 +1,14 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 # Import your routers and security utilities
 from burrow.app.api.v1 import hello, auth
-from burrow.app.core.security import require_app_key, require_current_user, require_current_user_for_client
+from burrow.app.core.security import (
+    require_app_key,
+    require_current_user,
+    require_current_user_for_client,
+)
 
 # ---- Logging setup ----
 logging.basicConfig(level=logging.INFO)
@@ -11,6 +16,21 @@ logger = logging.getLogger("burrow")
 
 # ---- App instance ----
 app = FastAPI(title="Burrow API", version="0.2.0")
+
+# ---- CORS setup ----
+# Allow Persona frontend (port 8003) to call Burrow backend (port 8000)
+origins = [
+    "http://192.168.16.102:8003",  # Persona frontend on device IP
+    "http://localhost:8003",       # local dev
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # or ["*"] for all origins during testing
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ---- Public: health ----
 @app.get("/health")
